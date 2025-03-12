@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthResponse {
-    String token;
-    boolean success;
+public class IntrospectResponse {
+    boolean valid;
 }
