@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Slf4j
 @Service
@@ -51,7 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return AuthResponse.builder()
                 .success(true)
-                .token(generateToken(authRequest.getUsername()))
+                .token(generateToken(user))
                 .build();
     }
 
@@ -66,16 +67,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    private String generateToken(String username) {
+    private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getUsername())
                 .issuer("peterlinh")
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
-                .claim("customClaim","Custom Claim")
+                .claim("scope",buildScope(user))
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -87,5 +88,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             log.error("Generate token failed", e);
             throw new RuntimeException(e);
         }
+    }
+    private String buildScope(User user){
+        StringJoiner joiner = new StringJoiner(" ");
+        if(!user.getRoles().isEmpty()){
+            user.getRoles().forEach(joiner::add);
+        }
+        return joiner.toString();
     }
 }
