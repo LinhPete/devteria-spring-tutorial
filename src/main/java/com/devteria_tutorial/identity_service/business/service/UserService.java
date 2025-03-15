@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface UserService {
     UserResponse getUserById(String id);
+    UserResponse getMyInfo();
     List<UserResponse> getAllUsers();
     UserResponse createUser(UserRequest requestUser);
     UserResponse updateUser(String id, UserRequest requestUser);
