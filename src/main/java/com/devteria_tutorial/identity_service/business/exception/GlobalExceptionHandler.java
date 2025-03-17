@@ -3,6 +3,7 @@ package com.devteria_tutorial.identity_service.business.exception;
 import com.devteria_tutorial.identity_service.business.dto.response.UserResponse;
 import com.devteria_tutorial.identity_service.presentation.APIResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,7 +29,18 @@ public class GlobalExceptionHandler {
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    ResponseEntity<APIResponse<String>> accessDeniedExceptionHandler(AccessDeniedException e) {
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(
+                APIResponse.<String>builder()
+                        .code(errorCode.getCode())
+                        .message("Access denied")
+                        .build()
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,7 +51,7 @@ public class GlobalExceptionHandler {
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(response);
     }
 
     @ExceptionHandler(ParseException.class)
