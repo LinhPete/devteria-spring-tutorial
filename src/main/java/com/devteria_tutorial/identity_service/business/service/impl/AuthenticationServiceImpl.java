@@ -5,7 +5,7 @@ import com.devteria_tutorial.identity_service.business.dto.request.IntrospectReq
 import com.devteria_tutorial.identity_service.business.dto.response.AuthResponse;
 import com.devteria_tutorial.identity_service.business.dto.response.IntrospectResponse;
 import com.devteria_tutorial.identity_service.business.exception.AppException;
-import com.devteria_tutorial.identity_service.business.exception.ErrorCode;
+import com.devteria_tutorial.identity_service.presentation.api_response.code_enum.ErrorCode;
 import com.devteria_tutorial.identity_service.business.service.AuthenticationService;
 import com.devteria_tutorial.identity_service.persistence.entity.User;
 import com.devteria_tutorial.identity_service.persistence.repository.UserRepository;
@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -77,6 +78,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
                 .claim("scope",buildScope(user))
+                .jwtID(UUID.randomUUID().toString())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -92,7 +94,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private String buildScope(User user){
         StringJoiner joiner = new StringJoiner(" ");
         if(!user.getRoles().isEmpty()){
-            user.getRoles().forEach(joiner::add);
+            user.getRoles().forEach(role -> {
+                joiner.add("ROLE_"+role.getName());
+                if(!role.getPermissions().isEmpty()){
+                    role.getPermissions().forEach(permission -> joiner.add("PERMISSION_"+permission.getName()));
+                }
+            });
         }
         return joiner.toString();
     }

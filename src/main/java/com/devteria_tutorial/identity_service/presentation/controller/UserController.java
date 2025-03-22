@@ -1,14 +1,17 @@
 package com.devteria_tutorial.identity_service.presentation.controller;
 
 import com.devteria_tutorial.identity_service.business.dto.request.UserRequest;
-import com.devteria_tutorial.identity_service.presentation.APIResponse;
+import com.devteria_tutorial.identity_service.presentation.api_response.APIResponse;
 import com.devteria_tutorial.identity_service.business.dto.response.UserResponse;
 import com.devteria_tutorial.identity_service.business.service.UserService;
+import com.devteria_tutorial.identity_service.presentation.api_response.ResponseEntityFactory;
+import com.devteria_tutorial.identity_service.presentation.api_response.code_enum.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,59 +26,63 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    APIResponse<UserResponse> createUser(@RequestBody @Valid UserRequest requestUser) {
-        return APIResponse.<UserResponse>builder()
-                .code(100)
-                .message("Successfully created user")
-                .result(userService.createUser(requestUser))
-                .build();
+    ResponseEntity<APIResponse<UserResponse>> createUser(@RequestBody @Valid UserRequest requestUser) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("{} : create user", authentication.getName());
+        return ResponseEntityFactory.getResponseEntity(
+                SuccessCode.USER_CREATED,
+                userService.createUser(requestUser)
+        );
     }
 
     @GetMapping
-    APIResponse<List<UserResponse>> getAllUsers() {
+    ResponseEntity<APIResponse<List<UserResponse>>> getAllUsers() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("Username: {}", authentication.getName());
-        authentication.getAuthorities().forEach(grantedAuthority -> log.info("GrantedAuthority: {}", grantedAuthority));
-        return APIResponse.<List<UserResponse>>builder()
-                .code(100)
-                .message("Successfully retrieved users")
-                .result(userService.getAllUsers())
-                .build();
+        log.info("{} : get all user", authentication.getName());
+        return ResponseEntityFactory.getResponseEntity(
+                SuccessCode.USERS_RETRIEVED,
+                userService.getAllUsers()
+        );
     }
 
     @GetMapping("/{id}")
-    APIResponse<UserResponse> getUserById(@PathVariable String id) {
-        return APIResponse.<UserResponse>builder()
-                .code(100)
-                .message("Successfully retrieved user")
-                .result(userService.getUserById(id))
-                .build();
+    ResponseEntity<APIResponse<UserResponse>> getUserById(@PathVariable String id) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("{} : get user by id", authentication.getName());
+        return ResponseEntityFactory.getResponseEntity(
+                SuccessCode.USER_RETRIEVED,
+                userService.getUserById(id)
+        );
     }
 
     @GetMapping("/my-info")
-    APIResponse<UserResponse> getMyInfo() {
-        return APIResponse.<UserResponse>builder()
-                .code(100)
-                .message("Successfully retrieved user")
-                .result(userService.getMyInfo())
-                .build();
+    ResponseEntity<APIResponse<UserResponse>> getMyInfo() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("{} : get profile", authentication.getName());
+        return ResponseEntityFactory.getResponseEntity(
+                SuccessCode.USER_RETRIEVED,
+                userService.getMyInfo()
+        );
     }
 
     @PutMapping("/{id}")
-    APIResponse<UserResponse> updateUser(@PathVariable String id, @RequestBody UserRequest requestUser) {
-        return APIResponse.<UserResponse>builder()
-                .code(100)
-                .message("Successfully updated user")
-                .result(userService.updateUser(id, requestUser))
-                .build();
+    ResponseEntity<APIResponse<UserResponse>> updateUser(@PathVariable String id, @RequestBody UserRequest requestUser) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("{} : update user", authentication.getName());
+        return ResponseEntityFactory.getResponseEntity(
+                SuccessCode.USER_UPDATED,
+                userService.updateUser(id, requestUser)
+        );
     }
 
     @DeleteMapping("/{id}")
-    APIResponse<String> deleteUser(@PathVariable String id) {
+    ResponseEntity<APIResponse<String>> deleteUser(@PathVariable String id) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("{} : delete user", authentication.getName());
         userService.deleteUser(id);
-        return APIResponse.<String>builder()
-                .code(100)
-                .message("Successfully deleted user")
-                .build();
+        return ResponseEntityFactory.getResponseEntity(
+                SuccessCode.USER_DELETED,
+                null
+        );
     }
 }

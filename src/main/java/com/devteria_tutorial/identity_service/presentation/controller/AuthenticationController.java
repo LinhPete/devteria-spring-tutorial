@@ -5,7 +5,7 @@ import com.devteria_tutorial.identity_service.business.dto.request.IntrospectReq
 import com.devteria_tutorial.identity_service.business.dto.response.AuthResponse;
 import com.devteria_tutorial.identity_service.business.dto.response.IntrospectResponse;
 import com.devteria_tutorial.identity_service.business.service.AuthenticationService;
-import com.devteria_tutorial.identity_service.presentation.APIResponse;
+import com.devteria_tutorial.identity_service.presentation.api_response.APIResponse;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

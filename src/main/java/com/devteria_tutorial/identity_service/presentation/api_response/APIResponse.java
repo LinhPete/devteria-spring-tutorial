@@ -1,4 +1,4 @@
-package com.devteria_tutorial.identity_service.presentation;
+package com.devteria_tutorial.identity_service.presentation.api_response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
