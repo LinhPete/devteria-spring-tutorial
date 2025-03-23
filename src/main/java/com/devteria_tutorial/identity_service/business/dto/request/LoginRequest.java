@@ -1,4 +1,4 @@
-package com.devteria_tutorial.identity_service.business.dto.response;
+package com.devteria_tutorial.identity_service.business.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthResponse {
-    String token;
-    boolean success;
+public class LoginRequest {
+    String username;
+    String password;
 }

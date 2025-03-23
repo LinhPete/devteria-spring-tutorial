@@ -1,8 +1,9 @@
 package com.devteria_tutorial.identity_service.presentation.controller;
 
-import com.devteria_tutorial.identity_service.business.dto.request.AuthRequest;
+import com.devteria_tutorial.identity_service.business.dto.request.LoginRequest;
 import com.devteria_tutorial.identity_service.business.dto.request.IntrospectRequest;
-import com.devteria_tutorial.identity_service.business.dto.response.AuthResponse;
+import com.devteria_tutorial.identity_service.business.dto.request.LogoutRequest;
+import com.devteria_tutorial.identity_service.business.dto.response.LoginResponse;
 import com.devteria_tutorial.identity_service.business.dto.response.IntrospectResponse;
 import com.devteria_tutorial.identity_service.business.service.AuthenticationService;
 import com.devteria_tutorial.identity_service.presentation.api_response.APIResponse;
@@ -23,12 +24,21 @@ import java.text.ParseException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
-    @PostMapping("/token")
-    APIResponse<AuthResponse> logIn(@RequestBody AuthRequest authRequest) {
-        return APIResponse.<AuthResponse>builder()
+    @PostMapping("/login")
+    APIResponse<LoginResponse> logIn(@RequestBody LoginRequest loginRequest) {
+        return APIResponse.<LoginResponse>builder()
                 .code(101)
                 .message("Access granted")
-                .result(authenticationService.authenticate(authRequest))
+                .result(authenticationService.authenticate(loginRequest))
+                .build();
+    }
+
+    @PostMapping("/logout")
+    APIResponse<Void> logOut(@RequestBody LogoutRequest logoutRequest) throws ParseException, JOSEException {
+        authenticationService.logout(logoutRequest);
+        return APIResponse.<Void>builder()
+                .code(101)
+                .message("Logout success")
                 .build();
     }
 
