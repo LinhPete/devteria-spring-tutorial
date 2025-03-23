@@ -3,8 +3,10 @@ package com.devteria_tutorial.identity_service.presentation.controller;
 import com.devteria_tutorial.identity_service.business.dto.request.LoginRequest;
 import com.devteria_tutorial.identity_service.business.dto.request.IntrospectRequest;
 import com.devteria_tutorial.identity_service.business.dto.request.LogoutRequest;
+import com.devteria_tutorial.identity_service.business.dto.request.RefreshTokenRequest;
 import com.devteria_tutorial.identity_service.business.dto.response.LoginResponse;
 import com.devteria_tutorial.identity_service.business.dto.response.IntrospectResponse;
+import com.devteria_tutorial.identity_service.business.dto.response.RefreshTokenResponse;
 import com.devteria_tutorial.identity_service.business.service.AuthenticationService;
 import com.devteria_tutorial.identity_service.presentation.api_response.APIResponse;
 import com.nimbusds.jose.JOSEException;
@@ -30,6 +32,15 @@ public class AuthenticationController {
                 .code(101)
                 .message("Access granted")
                 .result(authenticationService.authenticate(loginRequest))
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    APIResponse<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) throws ParseException, JOSEException {
+        return APIResponse.<RefreshTokenResponse>builder()
+                .code(101)
+                .message("Access granted")
+                .result(authenticationService.refreshToken(refreshTokenRequest))
                 .build();
     }
 

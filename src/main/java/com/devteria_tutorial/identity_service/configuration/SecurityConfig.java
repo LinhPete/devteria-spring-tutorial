@@ -1,6 +1,5 @@
 package com.devteria_tutorial.identity_service.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,17 +13,12 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import javax.crypto.spec.SecretKeySpec;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINT = {"/auth/login", "/auth/introspect"};
-
-    @Autowired
-    private CustomJwtDecoder customJwtDecoder;
+    private final String[] PUBLIC_ENDPOINT = {"/auth/login", "/auth/introspect", "/auth/refresh", "/auth/logout"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,7 +27,7 @@ public class SecurityConfig {
 //                .requestMatchers(HttpMethod.GET, "/users/**").hasRole(Role.ADMIN.name())
                 .anyRequest().authenticated());
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(
-                jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
+                jwtConfigurer -> jwtConfigurer.decoder(new CustomJwtDecoder())
                         .jwtAuthenticationConverter(jwtConverter())
 
         ).authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
@@ -49,14 +43,6 @@ public class SecurityConfig {
         converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return converter;
     }
-
-//    @Bean
-//    JwtDecoder jwtDecoder() {
-//        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-//        return NimbusJwtDecoder.withSecretKey(secretKeySpec)
-//                .macAlgorithm(MacAlgorithm.HS512)
-//                .build();
-//    }
 
     @Bean
     PasswordEncoder passwordEncoder() {
